@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Masonry from "react-masonry-css";
 import bg from "../assets/bg.svg";
 import { ToastContainer, toast } from "react-toastify";
-import { getNotes } from "../service";
+// import { getNotes } from "../service";
 import { AiOutlineEdit } from "react-icons/ai";
 import { TiDeleteOutline } from "react-icons/ti";
 import { v4 } from "uuid";
@@ -22,7 +22,7 @@ import {
   Input,
   TextArea,
   New,
-} from "./styles";
+} from "./styles.jsx";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
@@ -31,15 +31,21 @@ const Main = () => {
   const [newNoteContent, setNewNoteContent] = useState({});
   const [temp, setTemp] = useState(null);
   const [notes, setNotes] = useState([]);
-
   const putContent = (id = null) => {
     if (id !== null) {
-      var data = JSON.stringify(newNoteContent);
+      setNewNoteContent({ ...newNoteContent, created_at: Date() });
+      const newNotes = [newNoteContent, ...notes];
+
+      const params = {
+        ...newNoteContent,
+        created_at: undefined,
+        id: undefined,
+      };
       var config = {
         method: "put",
         url: `https://reminders-task.hiring.durbin.live/note/${id}`,
         headers: {},
-        data: data,
+        data: params,
       };
 
       axios(config)
@@ -54,6 +60,71 @@ const Main = () => {
         .catch(function (error) {
           console.log(error);
         });
+
+      return;
+    }
+    if (!newNoteContent.title) {
+      toast.error("Please add a title!", {});
+      return;
+    }
+    if (!newNoteContent.description) {
+      toast.error("Please add a decription!", {});
+      return;
+    }
+    setNewNoteContent({ ...newNoteContent, created_at: Date() });
+    const newNotes = [newNoteContent, ...notes];
+
+    const params = { ...newNoteContent, created_at: undefined };
+    var config = {
+      method: "post",
+      url: "https://reminders-task.hiring.durbin.live/note",
+      headers: {},
+      data: params,
+    };
+    axios(config)
+      .then((res) => {
+        toast.success("Notelet added");
+        console.log(res);
+        setNotes(newNotes);
+        setNewNote(!newNote);
+        setNewNoteContent({});
+      })
+      .catch((e) => {
+        toast.error("error");
+      });
+  };
+  const putContent2 = (id = null) => {
+    if (id !== null) {
+      // var data = JSON.stringify(newNoteContent);
+      var data = { ...newNoteContent, id: undefined };
+      var config = {
+        method: "put",
+        url: `https://reminders-task.hiring.durbin.live/note/${id}`,
+        headers: {},
+        data: data,
+      };
+
+      var r = axios(config);
+      r = JSON.parse(r);
+      if (r.status === "OK") {
+        toast.success("Notelet saved");
+        setNotes(newNotes);
+        setNewNote(!newNote);
+        setNewNoteContent({});
+      } else toast.error("error");
+
+      // axios(config)
+      //   .then(function (response) {
+      //     if (response.data.status === "OK") {
+      //       toast.success("Notelet saved");
+      //       setNotes(newNotes);
+      //       setNewNote(!newNote);
+      //       setNewNoteContent({});
+      //     }
+      //   })
+      //   .catch(function (error) {
+      //     console.log(error);
+      //   });
 
       return;
     }
@@ -89,34 +160,6 @@ const Main = () => {
       .catch((e) => {
         toast.error("error");
       });
-
-    // var requestOptions = {
-    //   method: "POST",
-    //   body: params,
-    //   redirect: "follow",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // };
-    // setNotes(newNotes);
-    // setNewNote(!newNote);
-    // setNewNoteContent({});
-    // try {
-    //   const res = fetch(
-    //     "https://reminders-task.hiring.durbin.live/note",
-    //     requestOptions
-    //   );
-    //   const data = JSON.parse(res).data;
-    //   console.log(data);
-    //   if (data.status === "OK") {
-    //     toast.success("Notelet Added");
-    //   } else toast.error("error");
-    //   console.log("dataaaaaaaaaaaaaa", data);
-    // } catch (e) {
-    //   toast.error(
-    //     "There is some error upadting your notelet kindly try again later"
-    //   );
-    // }
   };
 
   const discard = () => {
@@ -197,7 +240,7 @@ const Main = () => {
                     <motion.h3
                       layout
                       id="start"
-                      onClick={() => putContent(temp ? temp.id : null)}
+                      onClick={() => putContent(temp?.id)}
                       exit={{
                         opaacity: 0,
                       }}
@@ -207,7 +250,7 @@ const Main = () => {
                     >
                       Save{" "}
                     </motion.h3>
-                    <motion.p
+                    <motion.h3
                       layout
                       exit={{
                         opaacity: 0,
@@ -218,7 +261,7 @@ const Main = () => {
                       onClick={discard}
                     >
                       Discard
-                    </motion.p>
+                    </motion.h3>
                   </>
                 ) : (
                   <motion.h3
@@ -292,12 +335,15 @@ const Main = () => {
                               }}
                             >
                               <div className="icons">
-                                {/* <AiOutlineEdit /> */}
                                 <TiDeleteOutline
                                   id="del"
                                   onClick={() =>
                                     deleteNote(note.id, note.title)
                                   }
+                                />
+                                <AiOutlineEdit
+                                  id="edit"
+                                  onClick={() => editNote(note.id)}
                                 />
                               </div>
                               <h6>{note.title}</h6>
