@@ -65,16 +65,19 @@ const Main = () => {
       toast.error("Please add a decription!", {});
       return;
     }
-    setNewNoteContent({ ...newNoteContent, created_at: Date() });
+    setNewNoteContent({ ...newNoteContent });
     const newNotes = [newNoteContent, ...notes];
 
     const params = JSON.stringify(newNoteContent);
     var config = {
       method: "post",
       url: "https://reminders-task.hiring.durbin.live/note",
-      headers: {},
-      data: params,
-    };  
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: '{\r\n    "title": "Note without any description 😭"\r\n}',
+    };
+
     axios(config)
       .then((res) => {
         toast.success("Notelet added");
