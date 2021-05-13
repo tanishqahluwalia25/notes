@@ -320,9 +320,13 @@ const Main = () => {
                                 right: 0,
                               }}
                               dragElastic={0.1}
+                              initial={{ opacity: 0, y: -10 }}
                               animate={{
                                 y: 0,
                                 opacity: 1,
+                                transition:{
+                                  duration:Math.log10(index+1)
+                                }
                               }}
                               exit={{
                                 opacity: 0,
