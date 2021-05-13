@@ -93,75 +93,7 @@ const Main = () => {
         toast.error("error");
       });
   };
-  const putContent2 = (id = null) => {
-    if (id !== null) {
-      // var data = JSON.stringify(newNoteContent);
-      var data = { ...newNoteContent, id: undefined };
-      var config = {
-        method: "put",
-        url: `https://reminders-task.hiring.durbin.live/note/${id}`,
-        headers: {},
-        data: data,
-      };
-
-      var r = axios(config);
-      r = JSON.parse(r);
-      if (r.status === "OK") {
-        toast.success("Notelet saved");
-        setNotes(newNotes);
-        setNewNote(!newNote);
-        setNewNoteContent({});
-      } else toast.error("error");
-
-      // axios(config)
-      //   .then(function (response) {
-      //     if (response.data.status === "OK") {
-      //       toast.success("Notelet saved");
-      //       setNotes(newNotes);
-      //       setNewNote(!newNote);
-      //       setNewNoteContent({});
-      //     }
-      //   })
-      //   .catch(function (error) {
-      //     console.log(error);
-      //   });
-
-      return;
-    }
-    if (!newNoteContent.title) {
-      toast.error("Please add a title!", {});
-      return;
-    }
-    if (!newNoteContent.description) {
-      toast.error("Please add a decription!", {});
-      return;
-    }
-    setNewNoteContent({ ...newNoteContent });
-    const newNotes = [newNoteContent, ...notes];
-
-    const params = JSON.stringify(newNoteContent);
-    var config = {
-      method: "post",
-      url: "https://reminders-task.hiring.durbin.live/note",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: '{\r\n    "title": "Note without any description 😭"\r\n}',
-    };
-
-    axios(config)
-      .then((res) => {
-        toast.success("Notelet added");
-        console.log(res);
-        setNotes(newNotes);
-        setNewNote(!newNote);
-        setNewNoteContent({});
-      })
-      .catch((e) => {
-        toast.error("error");
-      });
-  };
-
+  
   const discard = () => {
     if (temp) {
       setNotes([temp, ...notes]);
