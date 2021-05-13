@@ -68,13 +68,13 @@ const Main = () => {
     setNewNoteContent({ ...newNoteContent, created_at: Date() });
     const newNotes = [newNoteContent, ...notes];
 
-    const params = JSON.stringify(newNoteContent);
+    const params = { ...newNoteContent, created_at: undefined };
     var config = {
       method: "post",
       url: "https://reminders-task.hiring.durbin.live/note",
       headers: {},
       data: params,
-    };  
+    };
     axios(config)
       .then((res) => {
         toast.success("Notelet added");
